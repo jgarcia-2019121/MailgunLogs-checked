@@ -6,7 +6,7 @@ class Log(models.Model):
     event = models.CharField(max_length=255)
     recipient = models.CharField(max_length=255)
     url = models.URLField(max_length=200, blank=True, null=True) 
-    message = models.JSONField()
+    message = models.TextField()
 
     class Meta:
         db_table = 'logs'
