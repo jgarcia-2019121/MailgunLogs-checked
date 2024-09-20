@@ -1,11 +1,20 @@
-import React from 'react';
-import LogDisplay from '../src/LogDisplay.jsx';
+import React, { useState } from 'react';
+import Login from './Login';
+import LogDisplay from './LogDisplay';
 
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
   return (
     <div>
-      <h1>Mailgun Logs</h1>
-      <LogDisplay />
+      {isAuthenticated ? (
+        <LogDisplay />
+      ) : (
+        <Login onLoginSuccess={handleLogin} />
+      )}
     </div>
   );
 };

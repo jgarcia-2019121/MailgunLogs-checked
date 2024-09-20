@@ -1,3 +1,4 @@
+/* Estilos básicos para dispositivos móviles (pequeñas pantallas) */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f7f6;
@@ -7,85 +8,70 @@ body {
 }
 
 .container {
-    max-width: 90%;
-    margin: 40px auto;
-    padding: 0 20px;
+    max-width: 95%;
+    margin: 20px auto;
+    padding: 0 10px;
 }
 
 h1 {
-    font-size: 36px;
+    font-size: 28px;
     text-align: center;
-    color: #333;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .filter-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
     margin-bottom: 20px;
+    align-items: center;
 }
 
-.filter-container input {
-    padding: 6px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 95px;
-    font-size: 14px;
-}
-
+.filter-container input,
 .filter-container select {
     padding: 6px;
-    margin-right: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 155px;
+    width: 100%;
     font-size: 14px;
 }
 
 .filter-container button {
     padding: 8px 16px;
-    border: none;
     background-color: #007bff;
     color: white;
+    border: none;
     border-radius: 4px;
     cursor: pointer;
-}
-
-.filter-container button:hover {
-    background-color: #0056b3;
+    width: 100%;
 }
 
 .logs-table-container {
     overflow-x: auto;
     background-color: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .logs-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    table-layout: auto;
 }
 
 .logs-table th,
 .logs-table td {
-    padding: 12px 15px;
+    padding: 10px;
     border: 1px solid #e0e0e0;
     text-align: left;
-    vertical-align: middle;
-    transition: background-color 0.3s ease;
 }
 
 .logs-table th {
     background-color: #f1f1f1;
     font-weight: bold;
-    font-size: 15px;
-    color: #333;
     text-transform: uppercase;
+    font-size: 14px;
+    color: #333;
 }
 
 .logs-table tr:nth-child(even) {
@@ -99,14 +85,11 @@ h1 {
 .log-message {
     max-width: 200px;
     overflow-x: auto;
-    white-space: nowrap;
-    padding: 8px;
+    padding: 6px;
     background-color: #fafafa;
-    border-radius: 5px;
     border: 1px solid #ddd;
-    color: #444;
-    font-family: monospace;
-    font-size: 13px;
+    border-radius: 5px;
+    font-size: 12px;
 }
 
 .logs-table td a {
@@ -132,54 +115,19 @@ h1 {
     background-color: #999;
 }
 
-@media screen and (max-width: 768px) {
-    .logs-table,
-    .logs-table th,
-    .logs-table td {
-        display: block;
-        width: 100%;
-    }
-
-    .logs-table th {
-        background-color: transparent;
-        position: relative;
-        padding-left: 50%;
-        text-align: left;
-    }
-
-    .logs-table td {
-        text-align: left;
-        padding-left: 50%;
-        position: relative;
-    }
-
-    .logs-table th::before,
-    .logs-table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 0;
-        width: 45%;
-        padding-left: 15px;
-        font-weight: bold;
-        white-space: nowrap;
-    }
-}
-
 .pagination-controls {
-    margin-top: 20px;
+    margin-top: 10px;
     text-align: center;
 }
 
 .pagination-button {
-    padding: 10px 18px;
-    margin: 0 5px;
+    padding: 8px 12px;
+    margin: 0 3px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
 }
 
 .pagination-button:disabled {
@@ -193,5 +141,60 @@ h1 {
 
 .pagination-info {
     margin: 0 10px;
-    font-size: 16px;
+    font-size: 14px;
+}
+
+/* Estilos adicionales para pantallas más grandes */
+@media screen and (min-width: 768px) {
+    .container {
+        max-width: 90%;
+    }
+
+    h1 {
+        font-size: 36px;
+    }
+
+    .filter-container {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .filter-container input,
+    .filter-container select,
+    .filter-container button {
+        width: auto;
+    }
+
+    .logs-table th,
+    .logs-table td {
+        padding: 12px 15px;
+    }
+
+    .pagination-button {
+        padding: 10px 18px;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .container {
+        max-width: 85%;
+    }
+
+    h1 {
+        font-size: 42px;
+    }
+
+    .logs-table th,
+    .logs-table td {
+        font-size: 16px;
+    }
+
+    .filter-container input,
+    .filter-container select {
+        width: 150px;
+    }
+
+    .pagination-button {
+        padding: 12px 20px;
+    }
 }
