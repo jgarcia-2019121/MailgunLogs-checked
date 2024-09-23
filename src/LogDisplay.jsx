@@ -12,6 +12,7 @@ const LogDisplay = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [eventOptions, setEventOptions] = useState([]);
+
   const fetchLogs = useCallback(async () => {
     try {
       const [day, month, year] = date.split('/');
@@ -24,7 +25,7 @@ const LogDisplay = () => {
           recipient: recipient || null,
           sender: sender || null,
           subject: subject || null,
-          page: page,
+          page: page, 
         },
       });
 
@@ -46,16 +47,46 @@ const LogDisplay = () => {
     }
   }, []);
 
+  // Ejecutar cuando el componente se monte
   useEffect(() => {
     fetchEventOptions();
   }, [fetchEventOptions]);
 
-  const handleNextPage = () => setPage((prevPage) => Math.min(prevPage + 1, totalPages));
-  const handlePreviousPage = () => setPage((prevPage) => Math.max(prevPage - 1, 1));
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+      fetchLogs();
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+      fetchLogs();
+    }
+  };
+
+  // Función que determina si hay filtros activos
+  const areFiltersEmpty = () => {
+    return !date && !event && !recipient && !sender && !subject;
+  };
+
+  // Modificamos la función de búsqueda
   const handleSearch = () => {
-    setPage(1);
+    setPage(1); // Reiniciar a la primera página cuando se busque
+    if (areFiltersEmpty()) {
+      // Si todos los filtros están vacíos, busca todos los registros
+      console.log('Mostrando todos los registros');
+    }
     fetchLogs();
   };
+
+  // Cuando los filtros estén vacíos, mostrar todos los datos automáticamente
+  useEffect(() => {
+    if (areFiltersEmpty()) {
+      fetchLogs();
+    }
+  }, [fetchLogs]);
 
   return (
     <div className="container">
@@ -113,7 +144,6 @@ const LogDisplay = () => {
           value={sender}
           onChange={(e) => setSender(e.target.value)}
         />
-        {/* Botón de buscar */}
         <button className="search-button" onClick={handleSearch}>
           Buscar
         </button>
