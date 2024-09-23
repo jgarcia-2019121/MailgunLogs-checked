@@ -12,7 +12,6 @@ const LogDisplay = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [eventOptions, setEventOptions] = useState([]);
-
   const fetchLogs = useCallback(async () => {
     try {
       const [day, month, year] = date.split('/');
@@ -48,15 +47,15 @@ const LogDisplay = () => {
   }, []);
 
   useEffect(() => {
-    fetchLogs();
-  }, [fetchLogs]);
-
-  useEffect(() => {
     fetchEventOptions();
   }, [fetchEventOptions]);
 
   const handleNextPage = () => setPage((prevPage) => Math.min(prevPage + 1, totalPages));
   const handlePreviousPage = () => setPage((prevPage) => Math.max(prevPage - 1, 1));
+  const handleSearch = () => {
+    setPage(1);
+    fetchLogs();
+  };
 
   return (
     <div className="container">
@@ -104,16 +103,20 @@ const LogDisplay = () => {
         />
         <input
           type="text"
-          placeholder="Enviado desde"
-          value={sender}
-          onChange={(e) => setSender(e.target.value)}
-        />
-        <input
-          type="text"
           placeholder="Asunto"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
+        <input
+          type="text"
+          placeholder="Enviado desde"
+          value={sender}
+          onChange={(e) => setSender(e.target.value)}
+        />
+        {/* Botón de buscar */}
+        <button className="search-button" onClick={handleSearch}>
+          Buscar
+        </button>
       </div>
 
       <div className="logs-table-container">
