@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LogDisplay from './LogDisplay'; // Importamos el componente LogDisplay
-import './main.css'; // Importamos el archivo de estilos
+import LogDisplay from './LogDisplay';
+import './main.css';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -14,7 +14,7 @@ const App = () => {
       }
     };
 
-    checkAuthentication(); // Verificamos la autenticación al cargar
+    checkAuthentication();
   }, []);
 
   const handleLogin = () => {
@@ -29,12 +29,12 @@ const App = () => {
     })(window, document, 'script', 'elRoble', '7249f332b02a8fb35c72185183ce5ab977bdd977c0d58d18d68e3f52334b', function (response) {
       console.log('Respuesta completa del SSO:', response);
 
-      if (response.status === 'success') {
+      //if (response.status === 'success') {
         setIsAuthenticated(true);
-        window.location.href = "/logs"; // Redirige a los logs después de iniciar sesión
-      } else {
-        console.error('Error en la autenticación:', response);
-      }
+        //window.location.href = "/"; // Redirige a los logs después de iniciar sesión
+      //} else {
+      //  console.error('Error en la autenticación:', response);
+      //}
     });
   };
 
