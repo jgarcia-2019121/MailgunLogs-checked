@@ -11,10 +11,11 @@ def get_logs(request):
     day = request.GET.get('day', None)
     event = request.GET.get('event', None)
     recipient = request.GET.get('recipient', None)
-    sender_mask = request.GET.get('sender_mask', None)
-    
+    sender_mask = request.GET.get('sender', None)
+    subject = request.GET.get('subject', None)
     # Obtener todos los logs ordenados por fecha
-    logs_list = Log.objects.all().order_by('-date')
+    #logs_list = Log.objects.all().order_by('-date')
+    logs_list = Log.objects.filter(message__icontains="subject").order_by('-date')
 
     # Filtros de búsqueda por fecha
     if year:
@@ -43,8 +44,11 @@ def get_logs(request):
         logs_list = logs_list.filter(recipient__icontains=recipient)
     
     if sender_mask:
-        logs_list = logs_list.filter(sender_mask__icontains=sender_mask)
-
+        logs_list = logs_list.filter(message__icontains=sender_mask)
+    
+    if subject:
+        logs_list = logs_list.filter(message__icontains=subject)
+    
     # Paginación
     paginator = Paginator(logs_list, 50)
     page_number = request.GET.get('page', 1)
@@ -62,34 +66,40 @@ def get_logs(request):
         message_data = log.message
 
         # Log para verificar el procesamiento
-        print(f"Processing log ID: {log.id}, message_data type: {type(message_data)}, message_data: {message_data}")
+        #print(f"Processing log ID: {log.id}, message_data type: {type(message_data)}, message_data: {message_data}")
 
         # Intentar decodificar el JSON en message_data
-        if isinstance(message_data, str):
+        message_data = log.message
+        try:
+            print(message_data.replace('\'','"'))
+            #message_json = json.loads(message_data.replace('{\'','{"',1).replace('\': "{', '": "{'))
+            message_json = json.loads(message_data.replace('\'','"'))
+            print(message_json)
+            if isinstance(message_json, dict):
+                headers = message_json.get('headers', '{}')
+            else:
+                headers = message_json
             try:
-                message_data = json.loads(message_data)
-                print(f"Decoded message_data for log ID {log.id}: {message_data}")
-            except json.JSONDecodeError:
-                print(f"Error decoding JSON for log ID: {log.id}")
-                message_data = {}
-        else:
-            if not isinstance(message_data, dict):
-                message_data = {}
-
-        # Extraer headers
-        headers = message_data.get('headers', None)
-        if headers:
-            if isinstance(headers, str):
-                try:
-                    headers = headers.replace("'", "\"")
-                    headers = json.loads(headers)
-                except json.JSONDecodeError:
-                    print(f"Error decoding headers for log ID: {log.id}")
-                    headers = {}
-            subject = headers.get('subject', 'N/A')
-            sender = headers.get('from', 'N/A')
-        else:
-            print(f"No headers present for log ID: {log.id}")
+            #headers_dict = json.loads(headers.replace('\'','"'))
+                subject = headers.get('subject', 'N/A')
+                sender = headers.get('from', 'N/A')
+            except (json.JSONDecodeError, TypeError):
+                print(f"Error parsing headers for Log ID: {log.id}")
+            print(f"Log ID: {log.id}, Subject: {subject}, From: {sender}")
+        except :
+            print(f"Bad JSON: {log.id}")
+            try :
+                start = message_data.index('\'subject\': ')+11
+                end = message_data.find(',', start)
+                subject = message_data[start:end].replace('\'','').replace('}"','')
+            except :
+                print(f"Subject can't be parsed: {log.id}")
+            try :
+                start = message_data.index('\'from\': ')+8
+                end = message_data.find(',', start)
+                sender = message_data[start:end].replace('\'','').replace('}"','')
+            except :
+                print(f"Sender can't be parsed: {log.id}")
 
         # Agregar datos al log
         logs_data.append({
