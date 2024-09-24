@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './LogDisplay.css';
 
-const LogDisplay = ({}) => {
+const LogDisplay = ({ handleLogout }) => {
   const [logs, setLogs] = useState([]);
   const [date, setDate] = useState('');
   const [event, setEvent] = useState('');
@@ -59,21 +59,6 @@ const LogDisplay = ({}) => {
       console.error('Error fetching event options:', error);
     }
   }, []);
-
-  // Función para eliminar cookies relacionadas con autenticación
-  const deleteAllCookies = () => {
-    document.cookie.split(';').forEach((cookie) => {
-      const name = cookie.split('=')[0];
-      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    });
-  };
-
-  const handleLogout = () => {
-    // Elimina el token del localStorage
-    localStorage.removeItem('token');
-    deleteAllCookies(); // Elimina todas las cookies
-    window.location.href = '/';
-  };
 
   useEffect(() => {
     fetchEventOptions();
