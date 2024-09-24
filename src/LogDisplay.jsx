@@ -114,29 +114,9 @@ const LogDisplay = ({  }) => {
         <span style={{ marginRight: '10px' }}>Filtros:</span>
 
         <input
-          type="text"
-          placeholder="dd/mm/yy"
+          type="date" 
           value={date}
-          onChange={(e) => {
-            const valor = e.target.value;
-            const regex = /^\d{0,2}$/;
-            const regex2 = /^\d{0,2}\/\d{0,2}$/;
-            const regex3 = /^\d{0,2}\/\d{0,2}\/\d{0,2}$/;
-
-            if (valor.length <= 2 && regex.test(valor)) {
-              setDate(valor);
-            } else if (valor.length <= 5 && regex2.test(valor)) {
-              setDate(valor);
-            } else if (valor.length <= 10 && regex3.test(valor)) {
-              setDate(valor);
-            }
-
-            if (valor.length === 2 && regex.test(valor)) {
-              setDate(valor + '/');
-            } else if (valor.length === 5 && regex2.test(valor)) {
-              setDate(valor + '/');
-            }
-          }}
+          onChange={(e) => setDate(e.target.value)}
         />
         <select value={event} onChange={(e) => setEvent(e.target.value)}>
           <option value="">Seleccionar evento</option>
