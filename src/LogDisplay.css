@@ -143,20 +143,121 @@ h1 {
     font-size: 14px;
 }
 
+/* Estilos para el botón de cerrar sesión */
+.logout-button {
+    background-color: #ff4d4d; /* Rojo claro */
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+    float: right;
+}
+
+.logout-button:hover {
+    background-color: #ff1a1a; /* Rojo más oscuro al pasar el mouse */
+}
+
+/* Otros estilos que ya tienes */
 .search-button {
-    padding: 8px 16px;
-    margin-left: 10px;
     background-color: #007bff;
     color: white;
+    padding: 8px 15px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-  }
-  
-  .search-button:hover {
+}
+
+.search-button:hover {
     background-color: #0056b3;
-  }
-  
+}
+
+.pagination-button {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.pagination-button:disabled {
+    background-color: #ccc;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.pagination-info {
+    font-weight: bold;
+    padding: 10px;
+}
+
+/* Modal de confirmación de cierre de sesión */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-buttons {
+    margin-top: 20px;
+}
+
+.confirm-button, .cancel-button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.confirm-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.confirm-button:hover {
+    background-color: #218838;
+}
+
+.cancel-button:hover {
+    background-color: #c82333;
+}
+
+.loading-spinner {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+}  
+
 @media screen and (min-width: 768px) {
     .container {
         max-width: 90%;
