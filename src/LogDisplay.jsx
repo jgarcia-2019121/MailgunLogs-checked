@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './LogDisplay.css';
 
-const LogDisplay = () => {
+const LogDisplay = ({ handleLogout }) => {
   const [logs, setLogs] = useState([]);
   const [date, setDate] = useState('');
   const [event, setEvent] = useState('');
@@ -12,11 +12,18 @@ const LogDisplay = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [eventOptions, setEventOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // Estado de loading
 
   const fetchLogs = useCallback(async () => {
     try {
-      const [day, month, year] = date.split('/');
+      setIsLoading(true); // Iniciar el estado de loading
+      const [year, month, day] = date.split('-');
+      const token = localStorage.getItem('token');
+
       const response = await axios.get('http://127.0.0.1:8000/get-logs/', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         params: {
           year: year || null,
           month: month || null,
@@ -25,29 +32,36 @@ const LogDisplay = () => {
           recipient: recipient || null,
           sender: sender || null,
           subject: subject || null,
-          page: page, 
+          page: page,
         },
       });
 
       setLogs(response.data.logs || []);
       setTotalPages(response.data.total_pages || 1);
+      setIsLoading(false); // Termina el estado de loading cuando los datos se cargan
     } catch (error) {
       console.error('Error fetching logs:', error);
       setLogs([]);
       setTotalPages(1);
+      setIsLoading(false); // Termina el estado de loading en caso de error
     }
   }, [date, event, recipient, sender, subject, page]);
 
   const fetchEventOptions = useCallback(async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/get-events/');
+      const token = localStorage.getItem('token');
+
+      const response = await axios.get('http://127.0.0.1:8000/get-events/', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setEventOptions(response.data.events || []);
     } catch (error) {
       console.error('Error fetching event options:', error);
     }
   }, []);
 
-  // Ejecutar cuando el componente se monte
   useEffect(() => {
     fetchEventOptions();
   }, [fetchEventOptions]);
@@ -66,22 +80,18 @@ const LogDisplay = () => {
     }
   };
 
-  // Función que determina si hay filtros activos
   const areFiltersEmpty = () => {
     return !date && !event && !recipient && !sender && !subject;
   };
 
-  // Modificamos la función de búsqueda
   const handleSearch = () => {
-    setPage(1); // Reiniciar a la primera página cuando se busque
+    setPage(1);
     if (areFiltersEmpty()) {
-      // Si todos los filtros están vacíos, busca todos los registros
       console.log('Mostrando todos los registros');
     }
     fetchLogs();
   };
 
-  // Cuando los filtros estén vacíos, mostrar todos los datos automáticamente
   useEffect(() => {
     if (areFiltersEmpty()) {
       fetchLogs();
@@ -90,34 +100,21 @@ const LogDisplay = () => {
 
   return (
     <div className="container">
+      <div className="logout-container">
+        <button className="logout-button" onClick={handleLogout}>
+          Cerrar sesión
+        </button>
+      </div>
       <h2 style={{ textAlign: 'center' }}>Tabla logs</h2>
       <div className="filter-container">
         <span style={{ marginRight: '10px' }}>Filtros:</span>
+
         <input
-          type="text"
-          placeholder="dd/mm/yy"
+          type="date"
           value={date}
-          onChange={(e) => {
-            const valor = e.target.value;
-            const regex = /^\d{0,2}$/;
-            const regex2 = /^\d{0,2}\/\d{0,2}$/;
-            const regex3 = /^\d{0,2}\/\d{0,2}\/\d{0,2}$/;
-
-            if (valor.length <= 2 && regex.test(valor)) {
-              setDate(valor);
-            } else if (valor.length <= 5 && regex2.test(valor)) {
-              setDate(valor);
-            } else if (valor.length <= 10 && regex3.test(valor)) {
-              setDate(valor);
-            }
-
-            if (valor.length === 2 && regex.test(valor)) {
-              setDate(valor + '/');
-            } else if (valor.length === 5 && regex2.test(valor)) {
-              setDate(valor + '/');
-            }
-          }}
+          onChange={(e) => setDate(e.target.value)} // El valor vendrá en formato YYYY-MM-DD
         />
+
         <select value={event} onChange={(e) => setEvent(e.target.value)}>
           <option value="">Seleccionar evento</option>
           {eventOptions.map((eventOption) => (
@@ -149,44 +146,49 @@ const LogDisplay = () => {
         </button>
       </div>
 
-      <div className="logs-table-container">
-        <table className="logs-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Fecha</th>
-              <th>Evento</th>
-              <th>Enviado a</th>
-              <th>Asunto</th>
-              <th>Enviado desde</th>
-              <th>URL</th>
-            </tr>
-          </thead>
-          <tbody>
-            {logs.length === 0 ? (
+      {/* Muestra el spinner mientras isLoading es true */}
+      {isLoading ? (
+        <div className="loading-spinner">Cargando...</div>
+      ) : (
+        <div className="logs-table-container">
+          <table className="logs-table">
+            <thead>
               <tr>
-                <td colSpan="7">No hay datos en la tabla</td>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Evento</th>
+                <th>Enviado a</th>
+                <th>Asunto</th>
+                <th>Enviado desde</th>
+                <th>URL</th>
               </tr>
-            ) : (
-              logs.map((log) => (
-                <tr key={log.id}>
-                  <td>{log.id}</td>
-                  <td>{log.date}</td>
-                  <td>{log.event}</td>
-                  <td>{log.recipient}</td>
-                  <td>{log.subject}</td>
-                  <td>{log.from}</td>
-                  <td>
-                    <a href={log.url} target="_blank" rel="noopener noreferrer">
-                      {log.url}
-                    </a>
-                  </td>
+            </thead>
+            <tbody>
+              {logs.length === 0 ? (
+                <tr>
+                  <td colSpan="7">No hay datos en la tabla</td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                logs.map((log) => (
+                  <tr key={log.id}>
+                    <td>{log.id}</td>
+                    <td>{log.date}</td>
+                    <td>{log.event}</td>
+                    <td>{log.recipient}</td>
+                    <td>{log.subject}</td>
+                    <td>{log.from}</td>
+                    <td>
+                      <a href={log.url} target="_blank" rel="noopener noreferrer">
+                        {log.url}
+                      </a>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="pagination-controls">
         <button
