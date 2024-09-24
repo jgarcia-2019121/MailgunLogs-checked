@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './LogDisplay.css';
 
-const LogDisplay = ({ handleLogout }) => {
+const LogDisplay = ({}) => {
   const [logs, setLogs] = useState([]);
   const [date, setDate] = useState('');
   const [event, setEvent] = useState('');
@@ -25,9 +25,7 @@ const LogDisplay = ({ handleLogout }) => {
           Authorization: `Bearer ${token}`,
         },
         params: {
-          year: year || null,
-          month: month || null,
-          day: day || null,
+          date: date || null,
           event: event || null,
           recipient: recipient || null,
           sender: sender || null,
@@ -61,6 +59,21 @@ const LogDisplay = ({ handleLogout }) => {
       console.error('Error fetching event options:', error);
     }
   }, []);
+
+  // Función para eliminar cookies relacionadas con autenticación
+  const deleteAllCookies = () => {
+    document.cookie.split(';').forEach((cookie) => {
+      const name = cookie.split('=')[0];
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    });
+  };
+
+  const handleLogout = () => {
+    // Elimina el token del localStorage
+    localStorage.removeItem('token');
+    deleteAllCookies(); // Elimina todas las cookies
+    window.location.href = '/';
+  };
 
   useEffect(() => {
     fetchEventOptions();
@@ -110,11 +123,10 @@ const LogDisplay = ({ handleLogout }) => {
         <span style={{ marginRight: '10px' }}>Filtros:</span>
 
         <input
-          type="date"
+          type="date" 
           value={date}
-          onChange={(e) => setDate(e.target.value)} // El valor vendrá en formato YYYY-MM-DD
+          onChange={(e) => setDate(e.target.value)}
         />
-
         <select value={event} onChange={(e) => setEvent(e.target.value)}>
           <option value="">Seleccionar evento</option>
           {eventOptions.map((eventOption) => (

@@ -4,26 +4,18 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LogDisplay from './LogDisplay';
 import './main.css';
 
-const App = () => {
+const Main = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Verificación de si el usuario está autenticado (revisar si hay un token en el localStorage)
   useEffect(() => {
-    // Verificar si el usuario ya está autenticado en localStorage
     const token = localStorage.getItem('token');
     if (token) {
       setIsAuthenticated(true);
     }
-
-    const checkAuthentication = () => {
-      if (window.ERSSO && window.ERSSO.t) {
-        setIsAuthenticated(true);
-        localStorage.setItem('token', window.ERSSO.t); // Guardar token en localStorage
-      }
-    };
-
-    checkAuthentication();
   }, []);
 
+  // Función para manejar el login
   const handleLogin = () => {
     (function (w, d, s, l, i, c) {
       const ch = Math.floor(Math.random() * 99999);
@@ -36,24 +28,24 @@ const App = () => {
     })(window, document, 'script', 'elRoble', '7249f332b02a8fb35c72185183ce5ab977bdd977c0d58d18d68e3f52334b', function (response) {
       console.log('Respuesta completa del SSO:', response);
 
-      setIsAuthenticated(true);
+      // Si la autenticación fue exitosa, guarda el token
       localStorage.setItem('token', window.ERSSO.t); // Guardar token en localStorage
-
-      // Redirigir a la página de logs
-      window.location.href = '/logs';
+      setIsAuthenticated(true);
     });
   };
 
+  // Función para manejar el logout
   const handleLogout = () => {
-    // Eliminar token de localStorage y redirigir al login
+    // Remover token y redirigir al login
     localStorage.removeItem('token');
     setIsAuthenticated(false);
-    window.location.href = '/'; // Redirige al login
+    window.location.href = '/'; // Redirigir al login
   };
 
   return (
     <Router>
       <Routes>
+        {/* Ruta para el login */}
         <Route
           path="/"
           element={
@@ -63,7 +55,9 @@ const App = () => {
                   <h1>Gestor de procesos</h1>
                   <h2>Iniciar sesión</h2>
                   <p>Presiona el botón para iniciar sesión</p>
-                  <button className="login-button" onClick={handleLogin}>Iniciar sesión</button>
+                  <button className="login-button" onClick={handleLogin}>
+                    Iniciar sesión
+                  </button>
                   <a href="#" className="forgot-password">Olvidé mi contraseña</a>
                 </div>
               </div>
@@ -72,13 +66,15 @@ const App = () => {
             )
           }
         />
+
+        {/* Ruta para los logs si está autenticado */}
         <Route
           path="/logs"
           element={
             isAuthenticated ? (
               <LogDisplay handleLogout={handleLogout} />
             ) : (
-              <Navigate to="/" /> // Si no está autenticado, redirigir al login
+              <Navigate to="/" /> // Redirige al login si no está autenticado
             )
           }
         />
@@ -88,4 +84,4 @@ const App = () => {
 };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+root.render(<Main />);
