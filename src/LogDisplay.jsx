@@ -13,13 +13,10 @@ const LogDisplay = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [eventOptions, setEventOptions] = useState([]);
   const fetchLogs = useCallback(async () => {
-    try {
-      const [day, month, year] = date.split('/');
+    try { 
       const response = await axios.get('http://127.0.0.1:8000/get-logs/', {
         params: {
-          year: year || null,
-          month: month || null,
-          day: day || null,
+          date: date || null,
           event: event || null,
           recipient: recipient || null,
           sender: sender || null,
@@ -63,29 +60,9 @@ const LogDisplay = () => {
       <div className="filter-container">
         <span style={{ marginRight: '10px' }}>Filtros:</span>
         <input
-          type="text"
-          placeholder="dd/mm/yy"
+          type="date" 
           value={date}
-          onChange={(e) => {
-            const valor = e.target.value;
-            const regex = /^\d{0,2}$/;
-            const regex2 = /^\d{0,2}\/\d{0,2}$/;
-            const regex3 = /^\d{0,2}\/\d{0,2}\/\d{0,2}$/;
-
-            if (valor.length <= 2 && regex.test(valor)) {
-              setDate(valor);
-            } else if (valor.length <= 5 && regex2.test(valor)) {
-              setDate(valor);
-            } else if (valor.length <= 10 && regex3.test(valor)) {
-              setDate(valor);
-            }
-
-            if (valor.length === 2 && regex.test(valor)) {
-              setDate(valor + '/');
-            } else if (valor.length === 5 && regex2.test(valor)) {
-              setDate(valor + '/');
-            }
-          }}
+          onChange={(e) => setDate(e.target.value)}
         />
         <select value={event} onChange={(e) => setEvent(e.target.value)}>
           <option value="">Seleccionar evento</option>
