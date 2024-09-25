@@ -23,6 +23,14 @@ body {
     text-align: center;
 }
 
+.logo-box {
+    background-color: #eba904;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
 h1 {
     font-size: 36px;
     margin-bottom: 10px;
@@ -30,7 +38,7 @@ h1 {
 
 h2 {
     font-size: 24px;
-    color: #007bff;
+    color: #858d9e;
     margin-bottom: 20px;
 }
 
@@ -40,7 +48,7 @@ p {
 
 .login-button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #eba904;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -49,7 +57,7 @@ p {
 }
 
 .login-button:hover {
-    background-color: #0056b3;
+    background-color: #efba36;
 }
 
 .forgot-password {

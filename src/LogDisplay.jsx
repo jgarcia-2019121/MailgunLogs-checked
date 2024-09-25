@@ -2,9 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './LogDisplay.css';
 
-const LogDisplay = ({  }) => {
+const LogDisplay = () => {
   const [logs, setLogs] = useState([]);
   const [date, setDate] = useState('');
+  const [date2, setDate2] = useState('');
   const [event, setEvent] = useState('');
   const [recipient, setRecipient] = useState('');
   const [sender, setSender] = useState('');
@@ -17,7 +18,6 @@ const LogDisplay = ({  }) => {
   const fetchLogs = useCallback(async () => {
     try {
       setIsLoading(true); // Iniciar el estado de loading
-      const [year, month, day] = date.split('-');
       const token = localStorage.getItem('token');
 
       const response = await axios.get('http://127.0.0.1:8000/get-logs/', {
@@ -25,7 +25,8 @@ const LogDisplay = ({  }) => {
           Authorization: `Bearer ${token}`,
         },
         params: {
-          date: date || null,
+          start_date: date, // Cambié 'date' por 'start_date'
+          end_date: date2,  // Cambié 'date2' por 'end_date'
           event: event || null,
           recipient: recipient || null,
           sender: sender || null,
@@ -43,7 +44,7 @@ const LogDisplay = ({  }) => {
       setTotalPages(1);
       setIsLoading(false); // Termina el estado de loading en caso de error
     }
-  }, [date, event, recipient, sender, subject, page]);
+  }, [date, date2, event, recipient, sender, subject, page]);
 
   const fetchEventOptions = useCallback(async () => {
     try {
@@ -85,7 +86,7 @@ const LogDisplay = ({  }) => {
   };
 
   const areFiltersEmpty = () => {
-    return !date && !event && !recipient && !sender && !subject;
+    return !date && !date2 && !event && !recipient && !sender && !subject;
   };
 
   const handleSearch = () => {
@@ -111,12 +112,17 @@ const LogDisplay = ({  }) => {
       </div>
       <h2 style={{ textAlign: 'center' }}>Tabla logs</h2>
       <div className="filter-container">
-        <span style={{ marginRight: '10px' }}>Filtros:</span>
-
+        <span style={{ marginRight: '3px' }}>Rango de fechas:</span>
         <input
-          type="date" 
+          type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
+        />
+        <span style={{ marginRight: '3px' }}> - </span>
+        <input
+          type="date"
+          value={date2}
+          onChange={(e) => setDate2(e.target.value)}
         />
         <select value={event} onChange={(e) => setEvent(e.target.value)}>
           <option value="">Seleccionar evento</option>

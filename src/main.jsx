@@ -59,6 +59,9 @@ const App = () => {
           element={
             !isAuthenticated ? (
               <div className="login-container">
+                <div className='logo-box'>
+                  
+                </div>
                 <div className="login-box">
                   <h1>Gestor de procesos</h1>
                   <h2>Iniciar sesión</h2>
