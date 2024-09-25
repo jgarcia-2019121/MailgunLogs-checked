@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './LogDisplay.css';
 
-const LogDisplay = ({ handleLogout }) => {
+const LogDisplay = () => {
   const [logs, setLogs] = useState([]);
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(''); // Date format: 'yyyy-mm-dd'
   const [event, setEvent] = useState('');
   const [recipient, setRecipient] = useState('');
   const [sender, setSender] = useState('');
@@ -17,15 +17,14 @@ const LogDisplay = ({ handleLogout }) => {
   const fetchLogs = useCallback(async () => {
     try {
       setIsLoading(true); // Iniciar el estado de loading
-      const [year, month, day] = date.split('-');
       const token = localStorage.getItem('token');
 
-      const response = await axios.get('http://127.0.0.1:8000/get-logs/', {
+      const response = await axios.get('http://localhost:8000/get-logs/', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         params: {
-          date: date || null,
+          date: date ? formatToBackendDate(date) : null, // Converting to 'yyyy-mm-dd'
           event: event || null,
           recipient: recipient || null,
           sender: sender || null,
@@ -49,7 +48,7 @@ const LogDisplay = ({ handleLogout }) => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.get('http://127.0.0.1:8000/get-events/', {
+      const response = await axios.get('http://localhost:8000/get-events/', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -84,10 +83,20 @@ const LogDisplay = ({ handleLogout }) => {
 
   const handleSearch = () => {
     setPage(1);
-    if (areFiltersEmpty()) {
-      console.log('Mostrando todos los registros');
-    }
     fetchLogs();
+  };
+
+  const formatToBackendDate = (dateString) => {
+    // Formato esperado para el backend: 'yyyy-mm-dd'
+    const [day, month, year] = dateString.split('-');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleDateChange = (e) => {
+    // Formato de visualización esperado: 'dd-mm-yyyy'
+    const backendDate = e.target.value; // 'yyyy-mm-dd'
+    const [year, month, day] = backendDate.split('-');
+    setDate(`${day}-${month}-${year}`);
   };
 
   useEffect(() => {
@@ -95,6 +104,12 @@ const LogDisplay = ({ handleLogout }) => {
       fetchLogs();
     }
   }, [fetchLogs]);
+
+  // Función para manejar el cierre de sesión
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Eliminar el token
+    window.location.href = '/'; // Redirigir al login
+  };
 
   return (
     <div className="container">
@@ -108,10 +123,11 @@ const LogDisplay = ({ handleLogout }) => {
         <span style={{ marginRight: '10px' }}>Filtros:</span>
 
         <input
-          type="date" 
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          type="date"
+          value={date ? formatToBackendDate(date) : ''} // Mostrar el valor en 'dd-mm-yyyy'
+          onChange={handleDateChange}
         />
+
         <select value={event} onChange={(e) => setEvent(e.target.value)}>
           <option value="">Seleccionar evento</option>
           {eventOptions.map((eventOption) => (
@@ -143,7 +159,6 @@ const LogDisplay = ({ handleLogout }) => {
         </button>
       </div>
 
-      {/* Muestra el spinner mientras isLoading es true */}
       {isLoading ? (
         <div className="loading-spinner">Cargando...</div>
       ) : (

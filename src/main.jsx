@@ -36,16 +36,33 @@ const Main = () => {
 
   // Función para manejar el logout
   const handleLogout = () => {
-    // Remover token y redirigir al login
+    console.log('Iniciando cierre de sesión...');
+  
+    // Verificar si ERSSO_auth está en el localStorage
+    const erssoAuth = localStorage.getItem('ERSSO_auth');
+    if (erssoAuth) {
+      console.log('ERSSO_auth encontrado, eliminando...');
+      localStorage.removeItem('ERSSO_auth'); // Intentar eliminar directamente
+    } else {
+      console.log('ERSSO_auth no encontrado en localStorage');
+    }
+  
+    // También eliminar token
     localStorage.removeItem('token');
+    
+    // Por si acaso está en sessionStorage también
+    sessionStorage.removeItem('ERSSO_auth');
+    sessionStorage.removeItem('token');
+    
+    console.log('Token y ERSSO_auth eliminados del almacenamiento');
+    
     setIsAuthenticated(false);
-    window.location.href = '/'; // Redirigir al login
-  };
-
+    window.location.href = '/';
+  };    
+   
   return (
     <Router>
       <Routes>
-        {/* Ruta para el login */}
         <Route
           path="/"
           element={
@@ -66,15 +83,13 @@ const Main = () => {
             )
           }
         />
-
-        {/* Ruta para los logs si está autenticado */}
         <Route
           path="/logs"
           element={
             isAuthenticated ? (
               <LogDisplay handleLogout={handleLogout} />
             ) : (
-              <Navigate to="/" /> // Redirige al login si no está autenticado
+              <Navigate to="/" />
             )
           }
         />
