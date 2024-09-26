@@ -4,8 +4,8 @@ import './LogDisplay.css';
 
 const LogDisplay = () => {
   const [logs, setLogs] = useState([]);
-  const [date, setDate] = useState('');
-  const [date2, setDate2] = useState('');
+  const [date, setDate] = useState(''); // Fecha de inicio
+  const [date2, setDate2] = useState(''); // Fecha de fin
   const [event, setEvent] = useState('');
   const [recipient, setRecipient] = useState('');
   const [sender, setSender] = useState('');
@@ -91,10 +91,7 @@ const LogDisplay = () => {
 
   const handleSearch = () => {
     setPage(1);
-    if (areFiltersEmpty()) {
-      console.log('Mostrando todos los registros');
-    }
-    fetchLogs();
+    fetchLogs(); // Llama a fetchLogs directamente para obtener resultados
   };
 
   useEffect(() => {
@@ -105,14 +102,8 @@ const LogDisplay = () => {
 
   return (
     <div className="container">
-      <div className="logout-container">
-        <button className="logout-button" onClick={handleLogout}>
-          Cerrar sesión
-        </button>
-      </div>
       <h2 style={{ textAlign: 'center' }}>Tabla logs</h2>
       <div className="filter-container">
-        <span style={{ marginRight: '3px' }}>Rango de fechas:</span>
         <input
           type="date"
           value={date}
@@ -152,6 +143,9 @@ const LogDisplay = () => {
         />
         <button className="search-button" onClick={handleSearch}>
           Buscar
+        </button>
+        <button className="logout-button" onClick={handleLogout}>
+          Cerrar sesión
         </button>
       </div>
 

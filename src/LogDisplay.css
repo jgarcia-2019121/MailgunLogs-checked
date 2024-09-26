@@ -10,6 +10,8 @@ body {
     max-width: 95%;
     margin: 20px auto;
     padding: 0 10px;
+    position: relative;
+    padding-top: 60px
 }
 
 h1 {
@@ -18,12 +20,32 @@ h1 {
     margin-bottom: 20px;
 }
 
-.filter-container {
+.logout-container {
+    position: fixed; /* Fijo en la parte superior */
+    top: 0;
+    left: 0;
+    right: 0; /* Extiende todo el ancho */
+    background-color: #f8f8f8; /* Fondo del contenedor */
+    padding: 10px; /* Espaciado interno */
+    z-index: 1000; /* Asegúrate de que esté arriba de otros elementos */
+}
+
+.filter-container  {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-bottom: 20px;
     align-items: center;
+    position: -webkit-sticky;
+    /* Safari */
+    position: fixed; /* Fija el div */
+    top: 0; /* Distancia desde el top de la ventana */
+    left: 0; /* Distancia desde el lado izquierdo */
+    width: 100%; /* Ancho completo */
+    background-color: #333; /* Color de fondo */
+    color: white; /* Color del texto */
+    padding: 10px; /* Espaciado interno */
+    z-index: 1000; /* Asegura que esté encima de otros elementos */
 }
 
 .filter-container input,
@@ -45,12 +67,24 @@ h1 {
     width: 100%;
 }
 
+.filter-container .logout-button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
 .logs-table-container {
     overflow-x: auto;
     background-color: #fff;
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 30px; /* Ajusta este valor para que el contenido no quede cubierto */
+
 }
 
 .logs-table {
@@ -144,24 +178,25 @@ h1 {
 }
 
 /* Estilos para el botón de cerrar sesión */
-.logout-button {
-    background-color: #ff4d4d; /* Rojo claro */
+.filter-container .logout-button {
+    background-color: #ff4d4d;
+    /* Rojo claro */
     color: white;
-    padding: 10px 20px;
+    padding: 8px;
     font-size: 14px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 20px;
     transition: background-color 0.3s ease;
     float: right;
+    margin-right: 30px;
 }
 
 .logout-button:hover {
-    background-color: #ff1a1a; /* Rojo más oscuro al pasar el mouse */
+    background-color: #ff1a1a;
+    /* Rojo más oscuro al pasar el mouse */
 }
 
-/* Otros estilos que ya tienes */
 .search-button {
     background-color: #007bff;
     color: white;
@@ -224,7 +259,8 @@ h1 {
     margin-top: 20px;
 }
 
-.confirm-button, .cancel-button {
+.confirm-button,
+.cancel-button {
     padding: 10px 20px;
     margin: 0 10px;
     border: none;
@@ -256,7 +292,7 @@ h1 {
     font-size: 18px;
     font-weight: bold;
     color: #007bff;
-}  
+}
 
 @media screen and (min-width: 768px) {
     .container {
