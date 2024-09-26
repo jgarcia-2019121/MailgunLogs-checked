@@ -2,46 +2,43 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 from .models import Log
 import json
+from django.utils import timezone
 
 # Función para obtener los logs con paginación y filtros
 def get_logs(request):
     # Parámetros opcionales de búsqueda
-    date = request.GET.get('date', None)
-    year, month, day = None, None, None
+    start_date = request.GET.get('start_date', None)
+    end_date = request.GET.get('end_date', None)
     
-    if date:
+    # Convertir las fechas si se proporcionan
+    if start_date:
         try:
-            year, month, day = date.split('-')  # Descomponer la fecha en año, mes y día
+            start_date = timezone.datetime.fromisoformat(start_date)
         except ValueError:
-            return JsonResponse({'error': 'Invalid date format'}, status=400)
-    
+            return JsonResponse({'error': 'Invalid start date format'}, status=400)
+
+    if end_date:
+        try:
+            end_date = timezone.datetime.fromisoformat(end_date)
+        except ValueError:
+            return JsonResponse({'error': 'Invalid end date format'}, status=400)
+
     event = request.GET.get('event', None)
     recipient = request.GET.get('recipient', None)
     sender_mask = request.GET.get('sender', None)
     subject = request.GET.get('subject', None)
 
     # Obtener todos los logs ordenados por fecha
-    logs_list = Log.objects.filter(message__icontains="subject").order_by('-date')
+    logs_list = Log.objects.all().order_by('-date')
 
-    # Filtros de búsqueda por fecha
-    if year:
-        try:
-            logs_list = logs_list.filter(date__year=int(year))
-        except ValueError:
-            return JsonResponse({'error': 'Invalid year format'}, status=400)
-    
-    if month:
-        try:
-            logs_list = logs_list.filter(date__month=int(month))
-        except ValueError:
-            return JsonResponse({'error': 'Invalid month format'}, status=400)
-    
-    if day:
-        try:
-            logs_list = logs_list.filter(date__day=int(day))
-        except ValueError:
-            return JsonResponse({'error': 'Invalid day format'}, status=400)
-    
+    # Filtros de búsqueda por rango de fechas
+    if start_date and end_date:
+        logs_list = logs_list.filter(date__range=(start_date, end_date))
+    elif start_date:
+        logs_list = logs_list.filter(date__gte=start_date)
+    elif end_date:
+        logs_list = logs_list.filter(date__lte=end_date)
+
     # Filtros por evento, destinatario y remitente
     if event:
         logs_list = logs_list.filter(event=event)
