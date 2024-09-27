@@ -14,12 +14,14 @@ const LogDisplay = () => {
   const [eventOptions, setEventOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Estado de loading
 
+  const apiUrl = import.meta.env.VITE_API_URL; // URL de la API desde las variables de entorno
+
   const fetchLogs = useCallback(async () => {
     try {
       setIsLoading(true); // Iniciar el estado de loading
       const token = localStorage.getItem('token');
 
-      const response = await axios.get('http://localhost:8000/get-logs/', {
+      const response = await axios.get(`${apiUrl}/get-logs/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -48,7 +50,7 @@ const LogDisplay = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.get('http://localhost:8000/get-events/', {
+      const response = await axios.get(`${apiUrl}/get-events/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -57,7 +59,7 @@ const LogDisplay = () => {
     } catch (error) {
       console.error('Error fetching event options:', error);
     }
-  }, []);
+  }, [apiUrl]);
 
   useEffect(() => {
     fetchEventOptions();

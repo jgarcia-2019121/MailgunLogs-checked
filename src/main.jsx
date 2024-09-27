@@ -58,8 +58,8 @@ const Main = () => {
     
     setIsAuthenticated(false);
     window.location.href = '/';
-  };    
-   
+  };
+
   return (
     <Router>
       <Routes>
