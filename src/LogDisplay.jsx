@@ -4,7 +4,8 @@ import './LogDisplay.css';
 
 const LogDisplay = () => {
   const [logs, setLogs] = useState([]);
-  const [date, setDate] = useState(''); // Date format: 'yyyy-mm-dd'
+  const [date, setDate] = useState(''); // Fecha de inicio
+  const [date2, setDate2] = useState(''); // Fecha de fin
   const [event, setEvent] = useState('');
   const [recipient, setRecipient] = useState('');
   const [sender, setSender] = useState('');
@@ -13,20 +14,20 @@ const LogDisplay = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [eventOptions, setEventOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Estado de loading
-
-  const apiUrl = import.meta.env.VITE_API_URL; // URL de la API desde las variables de entorno
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
 
   const fetchLogs = useCallback(async () => {
     try {
       setIsLoading(true); // Iniciar el estado de loading
       const token = localStorage.getItem('token');
 
-      const response = await axios.get(`${apiUrl}/get-logs/`, {
+      const response = await axios.get('http://localhost:8000/get-logs/', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         params: {
-          date: date ? formatToBackendDate(date) : null, // Converting to 'yyyy-mm-dd'
+          start_date: date,
+          end_date: date2,
           event: event || null,
           recipient: recipient || null,
           sender: sender || null,
@@ -44,13 +45,13 @@ const LogDisplay = () => {
       setTotalPages(1);
       setIsLoading(false); // Termina el estado de loading en caso de error
     }
-  }, [date, event, recipient, sender, subject, page]);
+  }, [date, date2, event, recipient, sender, subject, page]);
 
   const fetchEventOptions = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.get(`${apiUrl}/get-events/`, {
+      const response = await axios.get('http://localhost:8000/get-events/', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -59,7 +60,7 @@ const LogDisplay = () => {
     } catch (error) {
       console.error('Error fetching event options:', error);
     }
-  }, [apiUrl]);
+  }, []);
 
   useEffect(() => {
     fetchEventOptions();
@@ -80,25 +81,12 @@ const LogDisplay = () => {
   };
 
   const areFiltersEmpty = () => {
-    return !date && !event && !recipient && !sender && !subject;
+    return !date && !date2 && !event && !recipient && !sender && !subject;
   };
 
   const handleSearch = () => {
     setPage(1);
-    fetchLogs();
-  };
-
-  const formatToBackendDate = (dateString) => {
-    // Formato esperado para el backend: 'yyyy-mm-dd'
-    const [day, month, year] = dateString.split('-');
-    return `${year}-${month}-${day}`;
-  };
-
-  const handleDateChange = (e) => {
-    // Formato de visualización esperado: 'dd-mm-yyyy'
-    const backendDate = e.target.value; // 'yyyy-mm-dd'
-    const [year, month, day] = backendDate.split('-');
-    setDate(`${day}-${month}-${year}`);
+    fetchLogs(); // Llama a fetchLogs directamente para obtener resultados
   };
 
   useEffect(() => {
@@ -107,29 +95,37 @@ const LogDisplay = () => {
     }
   }, [fetchLogs]);
 
-  // Función para manejar el cierre de sesión
+  // Función para abrir el modal de cierre de sesión
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Función para cerrar sesión cuando se confirme en el modal
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Eliminar el token
-    window.location.href = '/'; // Redirigir al login
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  };
+
+  // Función para cerrar el modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
     <div className="container">
-      <div className="logout-container">
-        <button className="logout-button" onClick={handleLogout}>
-          Cerrar sesión
-        </button>
-      </div>
       <h2 style={{ textAlign: 'center' }}>Tabla logs</h2>
       <div className="filter-container">
-        <span style={{ marginRight: '10px' }}>Filtros:</span>
-
         <input
           type="date"
-          value={date ? formatToBackendDate(date) : ''} // Mostrar el valor en 'dd-mm-yyyy'
-          onChange={handleDateChange}
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
         />
-
+        <span style={{ marginRight: '3px' }}> - </span>
+        <input
+          type="date"
+          value={date2}
+          onChange={(e) => setDate2(e.target.value)}
+        />
         <select value={event} onChange={(e) => setEvent(e.target.value)}>
           <option value="">Seleccionar evento</option>
           {eventOptions.map((eventOption) => (
@@ -159,7 +155,27 @@ const LogDisplay = () => {
         <button className="search-button" onClick={handleSearch}>
           Buscar
         </button>
+        <button className="logout-button" onClick={handleOpenModal}>
+          Cerrar sesión
+        </button>
       </div>
+
+      {/* Modal de confirmación de cierre de sesión */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>¿Seguro que quieres cerrar sesión?</h3>
+            <div className="modal-buttons">
+              <button className="confirm-button" onClick={handleLogout}>
+                Sí, cerrar sesión
+              </button>
+              <button className="cancel-button" onClick={handleCloseModal}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="loading-spinner">Cargando...</div>
