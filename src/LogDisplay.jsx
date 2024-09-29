@@ -21,7 +21,7 @@ const LogDisplay = () => {
       setIsLoading(true); // Iniciar el estado de loading
       const token = localStorage.getItem('token');
 
-      const response = await axios.get('http://localhost:8000/get-logs/', {
+      const response = await axios.get(`http://localhost:8000/get-logs/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -51,7 +51,7 @@ const LogDisplay = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.get('http://localhost:8000/get-events/', {
+      const response = await axios.get(`http://localhost:8000/get-events/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
