@@ -75,27 +75,36 @@ def get_logs(request):
         try:
             message_json = json.loads(message_data.replace('\'','"'))
             if isinstance(message_json, dict):
-                headers = message_json.get('headers', '{}')
+                headers = message_json.get('headers', {})
             else:
                 headers = message_json
+
+            # Obtener el subject y from, si no están, usar "N/A"
+            subject = headers.get('subject', 'N/A')
+            sender = headers.get('from', 'N/A')
+
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            # Si ocurre un error, usar valores por defecto "N/A"
+            subject = "N/A"
+            sender = "N/A"
+        
+        # Si el parsing JSON no funciona, intentar buscar el formato manualmente
+        if subject == "N/A" or sender == "N/A":
             try:
-                subject = headers.get('subject', 'N/A')
-                sender = headers.get('from', 'N/A')
-            except (json.JSONDecodeError, TypeError):
-                pass
-        except:
-            try:
-                start = message_data.index('\'subject\': ')+11
+                # Buscar manualmente el campo 'subject' en el texto del mensaje
+                start = message_data.index('\'subject\': ') + 11
                 end = message_data.find(',', start)
-                subject = message_data[start:end].replace('\'','').replace('}"','')
+                subject = message_data[start:end].replace('\'', '').replace('}"', '')
             except:
-                pass
+                subject = "N/A"
+            
             try:
-                start = message_data.index('\'from\': ')+8
+                # Buscar manualmente el campo 'from' en el texto del mensaje
+                start = message_data.index('\'from\': ') + 8
                 end = message_data.find(',', start)
-                sender = message_data[start:end].replace('\'','').replace('}"','')
+                sender = message_data[start:end].replace('\'', '').replace('}"', '')
             except:
-                pass
+                sender = "N/A"
 
         # Agregar datos al log
         logs_data.append({
